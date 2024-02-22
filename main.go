@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
-	_ "github.com/gin-gonic/gin"
 )
 
 func main() {
