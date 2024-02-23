@@ -56,7 +56,6 @@ func createCollection() error {
 					"bsonType":    "double",
 					"description": "must be a double and is required",
 				},
-				// Add more properties as needed
 			},
 		},
 	})
