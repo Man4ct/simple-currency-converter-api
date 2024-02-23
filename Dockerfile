@@ -1,4 +1,4 @@
-# Use the official Golang image as a base image
+# Use the official Golang image as a base image for the builder stage
 FROM golang:1.21 AS builder
 
 # Set the working directory inside the container
@@ -25,6 +25,9 @@ WORKDIR /usr/local/bin
 
 # Copy the built Go binary from the previous stage
 COPY --from=builder /usr/local/bin/app .
+
+# Copy the .env file to the working directory
+COPY .env .
 
 # Start the Go application
 CMD ["./app"]
