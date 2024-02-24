@@ -306,3 +306,25 @@ func updateCurrenciesInDB(currencyResponse CurrencyResponse) error {
 
 	return nil
 }
+
+func ConvertCurrency(c *gin.Context, base string, amount int64, curencies []string) string {
+	client := GetClient()
+	database := client.Database("currency")
+	collection := database.Collection("currency")
+
+	baseCurrency := collection.FindOne(context.TODO(), bson.M{"symbol": base})
+	_, err := collection.Find(context.TODO(), bson.M{"symbol": bson.M{"$in": curencies}})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding currency"})
+		// return err
+	}
+	// Access the single document from baseCurrency
+	var baseDocument bson.M
+	if err := baseCurrency.Decode(&baseDocument); err != nil {
+		fmt.Println("Error decoding base currency document:", err)
+	} else {
+		fmt.Println("Base Currency Document:", baseDocument["name"])
+	}
+
+	return "nil"
+}

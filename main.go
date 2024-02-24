@@ -3,33 +3,13 @@ package main
 import (
 	"fmt"
 	_ "fmt"
+	"net/http"
 	"os"
-	"time"
 
 	"github.com/Man4ct/simple-currency-converter-api/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
-
-// CurrencyResponse represents the structure of the response from the API
-type CurrencyResponse struct {
-	Success   bool               `json:"success"`
-	Timestamp int64              `json:"timestamp"`
-	Base      string             `json:"base"`
-	Date      string             `json:"date"`
-	Rates     map[string]float64 `json:"rates"`
-}
-
-// Currency represents the structure of the currency document in MongoDB
-type Currency struct {
-	Base      string             `bson:"base"`
-	Date      string             `bson:"date"`
-	Timestamp int64              `bson:"timestamp"`
-	Rates     map[string]float64 `bson:"rates"`
-	Name      string             `bson:"name"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
-}
 
 func main() {
 
@@ -48,6 +28,26 @@ func main() {
 	r.GET("/", handler)
 	r.GET("/latest", func(c *gin.Context) {
 		db.GetLatestCurrency(c, apiKey, baseURL)
+	})
+	r.POST("/convert", func(c *gin.Context) {
+		var requestBody struct {
+			Base       string   `json:"base"`
+			Amount     int64    `json:"amount"`
+			Currencies []string `json:"currencies"`
+		}
+
+		// Parse request body
+		if err := c.BindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		// Call ConvertCurrency function
+		result := db.ConvertCurrency(c, requestBody.Base, requestBody.Amount, requestBody.Currencies)
+
+		// Return the result to the client
+		c.JSON(http.StatusOK, gin.H{"result": result})
+		// db.ConvertCurrency(c, )
 	})
 	r.Run()
 }
