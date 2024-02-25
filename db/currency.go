@@ -321,25 +321,10 @@ func ConvertCurrency(c *gin.Context, base string, amount int64, curencies []stri
 	}
 	// Access the single document from baseCurrency
 	var baseDocument bson.M
-	if err := baseCurrency.Decode(&baseDocument); err != nil {
-		fmt.Println("Error decoding base currency document:", err)
-	} else {
-		fmt.Println("Base Currency Document:", baseDocument["name"])
-	}
+	decodeSingle(&baseDocument, baseCurrency)
 
-	// Create a slice to store the documents
 	var documents []bson.M
-
-	// Iterate over the cursor to access each document
-	for result.Next(context.TODO()) {
-		var document bson.M
-		if err := result.Decode(&document); err != nil {
-			fmt.Println("Error decoding document:", err)
-			continue
-		}
-		// Append the document to the slice
-		documents = append(documents, document)
-	}
+	decodeMany(&documents, result)
 
 	// Check if there were any errors during iteration
 	if err := result.Err(); err != nil {
