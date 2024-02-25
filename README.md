@@ -42,29 +42,29 @@ To get started with this project, follow the [Getting Started](getting_started.m
     "currencies": ["USD", "GBP", "JPY"]
   }
 - **Response**:
- - Success: HTTP 200 OK
- ```json
- {
-  "base": {
-    "symbol": "EUR",
-    "name": "Euro",
-    "rate": 1
-  },
-  "rates": [
+  - Success: HTTP 200 OK
+    ```json
     {
-      "symbol": "USD",
-      "name": "US Dollar",
-      "rate": 1.123456,
-      "converted_amount": 112.3456
+    "base": {
+        "symbol": "EUR",
+        "name": "Euro",
+        "rate": 1
     },
-    {
-      "symbol": "GBP",
-      "name": "British Pound",
-      "rate": 0.876543,
-      "converted_amount": 87.6543
-    },
-    ...
-  ]
-}
+    "rates": [
+        {
+        "symbol": "USD",
+        "name": "US Dollar",
+        "rate": 1.123456,
+        "converted_amount": 112.3456
+        },
+        {
+        "symbol": "GBP",
+        "name": "British Pound",
+        "rate": 0.876543,
+        "converted_amount": 87.6543
+        },
+        ...
+    ]
+    }
     ```
   - Failure: HTTP 500 Internal Server Error

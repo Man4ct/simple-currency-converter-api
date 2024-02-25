@@ -1,9 +1,8 @@
-# Getting Started with Backend Project
+# Getting Started
 
 ## Prerequisites
 
 Before getting started, make sure you have the following installed:
-
 - Go programming language
 - MongoDB
 - API key and base URL for the currency exchange API
