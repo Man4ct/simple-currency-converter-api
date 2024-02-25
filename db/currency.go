@@ -60,12 +60,12 @@ func GetLatestCurrency(c *gin.Context, apiKey, baseURL string) {
 		return
 	}
 
-	// // Save currency data to MongoDB
-	// err = saveCurrencyToDB(currencyResponse)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error saving data to MongoDB"})
-	// 	return
-	// }
+	// // Save currency data to MongoDB if the collection is empty
+	err = saveCurrencyToDB(currencyResponse)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error saving data to MongoDB"})
+		return
+	}
 
 	// Update currency data to MongoDB
 	err = updateCurrenciesInDB(currencyResponse)
@@ -254,6 +254,16 @@ func saveCurrencyToDB(currencyResponse CurrencyResponse) error {
 	// Select database and collection
 	database := client.Database("currency")
 	collection := database.Collection("currency")
+
+	// Check if the collection is empty
+	count, err := collection.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		// Collection is not empty, do not save data
+		return nil
+	}
 
 	// Iterate over rates and save each one as a separate document
 	for symbol, rate := range currencyResponse.Rates {
