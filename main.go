@@ -46,7 +46,7 @@ func main() {
 		result := db.ConvertCurrency(c, requestBody.Base, requestBody.Amount, requestBody.Currencies)
 
 		// Return the result to the client
-		c.JSON(http.StatusOK, gin.H{"result": result})
+		c.JSON(http.StatusOK, result)
 		// db.ConvertCurrency(c, )
 	})
 	r.Run()

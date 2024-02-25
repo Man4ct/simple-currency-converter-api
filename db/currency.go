@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "fmt"
+	"math"
 	"net/http"
 	"time"
 
@@ -307,13 +308,13 @@ func updateCurrenciesInDB(currencyResponse CurrencyResponse) error {
 	return nil
 }
 
-func ConvertCurrency(c *gin.Context, base string, amount int64, curencies []string) string {
+func ConvertCurrency(c *gin.Context, base string, amount int64, curencies []string) gin.H {
 	client := GetClient()
 	database := client.Database("currency")
 	collection := database.Collection("currency")
 
 	baseCurrency := collection.FindOne(context.TODO(), bson.M{"symbol": base})
-	_, err := collection.Find(context.TODO(), bson.M{"symbol": bson.M{"$in": curencies}})
+	result, err := collection.Find(context.TODO(), bson.M{"symbol": bson.M{"$in": curencies}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding currency"})
 		// return err
@@ -326,5 +327,40 @@ func ConvertCurrency(c *gin.Context, base string, amount int64, curencies []stri
 		fmt.Println("Base Currency Document:", baseDocument["name"])
 	}
 
-	return "nil"
+	// Create a slice to store the documents
+	var documents []bson.M
+
+	// Iterate over the cursor to access each document
+	for result.Next(context.TODO()) {
+		var document bson.M
+		if err := result.Decode(&document); err != nil {
+			fmt.Println("Error decoding document:", err)
+			continue
+		}
+		// Append the document to the slice
+		documents = append(documents, document)
+	}
+
+	// Check if there were any errors during iteration
+	if err := result.Err(); err != nil {
+		fmt.Println("Error during iteration:", err)
+	}
+
+	baseRate := baseDocument["rate"].(float64)
+
+	for _, document := range documents {
+		rate := document["rate"].(float64)
+		convertedAmount := (1 / baseRate) * rate * float64(amount)
+
+		// Round the converted amount to four digits after the decimal point
+		roundedAmount := math.Round(convertedAmount*10000) / 10000
+
+		// Update the document with the rounded converted amount
+		document["converted_amount"] = roundedAmount
+
+	}
+	return gin.H{
+		"base":  baseDocument,
+		"rates": documents,
+	}
 }
