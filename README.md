@@ -1,5 +1,5 @@
 # simple-currency-converter-api
-## Getting Started
+## Getting Started 
 
 To get started with this project, follow the [Getting Started](getting_started.md) guide.
 
