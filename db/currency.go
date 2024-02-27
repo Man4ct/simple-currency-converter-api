@@ -359,3 +359,20 @@ func ConvertCurrency(c *gin.Context, base string, amount int64, curencies []stri
 		"rates": documents,
 	}
 }
+
+func GetAllCurrency() []bson.M {
+	client := GetClient()
+	database := client.Database("currency")
+	collection := database.Collection("currency")
+
+	// Find all documents in the collection
+	cursor, err := collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		fmt.Println("Error finding documents:", err)
+		return nil
+	}
+
+	var curencies []bson.M
+	decodeMany(&curencies, cursor)
+	return curencies
+}

@@ -30,10 +30,14 @@ func convertHandler(c *gin.Context) {
 
 	// Return the result to the client
 	c.JSON(http.StatusOK, result)
-	// db.ConvertCurrency(c, )
 }
 
 func latestHandler(c *gin.Context) {
 	apiKey, baseURL := loadEnv()
 	db.GetLatestCurrency(c, apiKey, baseURL)
+}
+
+func getAllCurrencyHandler(c *gin.Context) {
+	result := db.GetAllCurrency()
+	c.JSON(http.StatusOK, result)
 }

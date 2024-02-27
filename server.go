@@ -13,7 +13,7 @@ func startServer() {
 	r.GET("/", handler)
 	r.GET("/latest", latestHandler)
 	r.POST("/convert", convertHandler)
-
+	r.GET("/currencies", getAllCurrencyHandler)
 	// Start the server
 	if err := r.Run(); err != nil {
 		fmt.Println("Error starting server:", err)
